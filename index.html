@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>RAZA ⊗ HACKS — WP Ban Unban VIP</title>
+<style>
+:root{
+--bg:#05070a;
+--bg2:#070c10;
+--panel: rgba(12,20,22,0.55);
+--panel-border: rgba(70,255,180,0.18);
+--green:#39ff9c;
+--green-dim:#1fae6e;
+--blue:#3ad9ff;
+--blue-dim:#1c86a8;
+--text:#d9fbe8;
+--text-dim:#7fa398;
+--danger:#ff5c7a;
+--mono: 'JetBrains Mono','Fira Code',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+--sans: 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{
+margin:0;
+background:
+radial-gradient(ellipse at 20% -10%, rgba(58,217,255,0.10), transparent 55%),
+radial-gradient(ellipse at 85% 10%, rgba(57,255,156,0.08), transparent 50%),
+var(--bg);
+color:var(--text);
+font-family:var(--sans);
+min-height:100vh;
+overflow-x:hidden;
+position:relative;
+}
+#matrix{
+position:fixed; inset:0; z-index:0; opacity:0.16; pointer-events:none;
+}
+.veil{
+position:fixed; inset:0; z-index:1; pointer-events:none;
+background:linear-gradient(180deg, rgba(5,7,10,0.2), rgba(5,7,10,0.55) 40%, var(--bg) 92%);
+}
+.wrap{ position:relative; z-index:2; max-width:920px; margin:0 auto; padding:24px 18px 60px; }
+
+/* ---------- Hero ---------- */
+.hero{ text-align:center; padding:36px 6px 20px; }
+.badge{
+display:inline-flex; align-items:center; gap:8px;
+font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+color:var(--green); border:1px solid var(--panel-border);
+padding:6px 14px; border-radius:999px; background:rgba(57,255,156,0.05);
+text-transform:uppercase;
+}
+.badge .dot{ width:6px;height:6px;border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 1.6s infinite; }
+@keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+h1.title{
+font-family:var(--mono);
+font-size:clamp(26px,6.4vw,44px);
+line-height:1.15;
+margin:18px 0 4px;
+letter-spacing:0.02em;
+background:linear-gradient(90deg, var(--green), var(--blue) 60%, var(--green));
+background-size:220% auto;
+-webkit-background-clip:text; background-clip:text; color:transparent;
+animation:sheen 6s linear infinite;
+text-shadow:0 0 30px rgba(57,255,156,0.15);
+}
+@keyframes sheen{ to{ background-position:220% center; } }
+
+.subtitle{
+font-family:var(--mono); font-size:13px; color:var(--blue);
+letter-spacing:.22em; text-transform:uppercase; opacity:.85;
+}
+.tagline{
+margin-top:14px; color:var(--text-dim); font-size:14.5px; max-width:520px;
+margin-left:auto; margin-right:auto; line-height:1.6;
+}
+.terminal-line{
+font-family:var(--mono); font-size:12.5px; color:var(--green-dim);
+margin-top:16px; min-height:18px;
+}
+.terminal-line .caret{ display:inline-block; width:7px; height:14px; background:var(--green); margin-left:2px; animation:blink 1s step-end infinite; vertical-align:-2px; }
+@keyframes blink{ 50%{ opacity:0; } }
+
+/* ---------- Sections ---------- */
+.section-label{
+font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+color:var(--blue); margin:44px 4px 14px; display:flex; align-items:center; gap:10px;
+}
+.section-label::after{ content:''; flex:1; height:1px; background:linear-gradient(90deg, var(--panel-border), transparent); }
+
+/* ---------- Glass card ---------- */
+.card{
+background:var(--panel);
+border:1px solid var(--panel-border);
+border-radius:16px;
+backdrop-filter: blur(14px) saturate(140%);
+-webkit-backdrop-filter: blur(14px) saturate(140%);
+box-shadow: 0 8px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+/* ---------- Dashboard grid ---------- */
+.grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:560px){ .grid{ grid-template-columns:1fr; } }
+
+.issue-card{
+padding:18px 16px; cursor:pointer; position:relative; overflow:hidden;
+transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.issue-card::before{
+content:''; position:absolute; inset:0; opacity:0; transition:opacity .25s ease;
+background:radial-gradient(120px 80px at 20% 0%, rgba(57,255,156,0.16), transparent 70%);
+}
+.issue-card:hover{ transform:translateY(-3px); border-color:rgba(57,255,156,0.4); box-shadow:0 12px 30px rgba(57,255,156,0.08); }
+.issue-card:hover::before{ opacity:1; }
+.issue-card.active{ border-color:var(--green); box-shadow:0 0 0 1px rgba(57,255,156,0.4), 0 12px 30px rgba(57,255,156,0.15); }
+.issue-icon{ font-family:var(--mono); font-size:20px; color:var(--green); margin-bottom:10px; display:block; }
+.issue-title{ font-weight:600; font-size:14.5px; color:var(--text); margin-bottom:4px; }
+.issue-desc{ font-size:12.5px; color:var(--text-dim); line-height:1.5; }
+
+/* ---------- Form ---------- */
+.form-card{ padding:22px 18px; margin-top:6px; }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:560px){ .field-row{ grid-template-columns:1fr; } }
+.field{ margin-bottom:14px; }
+.field label{
+display:block; font-family:var(--mono); font-size:11px; letter-spacing:.06em;
+color:var(--blue); margin-bottom:6px; text-transform:uppercase;
+}
+.field input, .field select, .field textarea{
+width:100%; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.08);
+border-radius:10px; padding:11px 12px; color:var(--text); font-family:var(--sans);
+font-size:14.5px; outline:none; transition:border-color .2s ease, box-shadow .2s ease;
+}
+.field input::placeholder, .field textarea::placeholder{ color:#4a6058; }
+.field input:focus, .field select:focus, .field textarea:focus{
+border-color:var(--green); box-shadow:0 0 0 3px rgba(57,255,156,0.12);
+}
+.field select{ appearance:none; -webkit-appearance:none;
+background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9'><path d='M1 1l6 6 6-6' stroke='%2339ff9c' stroke-width='1.6' fill='none'/></svg>");
+background-repeat:no-repeat; background-position:right 12px center;
+}
+.field textarea{ resize:vertical; min-height:100px; line-height:1.5; }
+.counter{ text-align:right; font-family:var(--mono); font-size:11px; color:var(--text-dim); margin-top:4px; }
+.counter.warn{ color:var(--danger); }
+
+.toggle-group{ display:flex; gap:10px; }
+.toggle-btn{
+flex:1; padding:10px; text-align:center; border-radius:10px; cursor:pointer;
+border:1px solid rgba(255,255,255,0.08); background:rgba(0,0,0,0.3);
+font-size:13.5px; color:var(--text-dim); transition:all .2s ease;
+}
+.toggle-btn.active{ border-color:var(--green); color:var(--green); background:rgba(57,255,156,0.08); box-shadow:0 0 0 1px rgba(57,255,156,0.25); }
+
+/* ---------- Buttons ---------- */
+.btn{
+font-family:var(--sans); font-weight:600; font-size:14.5px; border:none; cursor:pointer;
+border-radius:12px; padding:14px 20px; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+transition:transform .15s ease, box-shadow .2s ease, opacity .2s ease; width:100%;
+}
+.btn:active{ transform:scale(0.98); }
+.btn-primary{
+background:linear-gradient(90deg, var(--green), var(--blue));
+color:#03110a; box-shadow:0 8px 24px rgba(57,255,156,0.25);
+}
+.btn-primary:hover{ box-shadow:0 8px 30px rgba(57,255,156,0.4); }
+.btn-primary:disabled{ opacity:0.6; cursor:not-allowed; box-shadow:none; }
+.btn-outline{
+background:transparent; border:1px solid var(--panel-border); color:var(--text);
+}
+.btn-outline:hover{ border-color:var(--green); color:var(--green); }
+.btn-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:12px; }
+@media(max-width:560px){ .btn-row{ grid-template-columns:1fr; } }
+
+/* ---------- Loading ---------- */
+.loading-wrap{ display:none; align-items:center; gap:12px; justify-content:center; padding:26px 0; font-family:var(--mono); font-size:13px; color:var(--green); }
+.loading-wrap.show{ display:flex; }
+.spinner{ width:18px; height:18px; border-radius:50%; border:2px solid rgba(57,255,156,0.2); border-top-color:var(--green); animation:spin .7s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* ---------- Success ---------- */
+.success-banner{
+display:none; align-items:center; gap:10px; padding:12px 16px; border-radius:12px;
+background:rgba(57,255,156,0.08); border:1px solid rgba(57,255,156,0.35); color:var(--green);
+font-size:13.5px; margin-bottom:14px; animation:slideIn .35s ease;
+}
+.success-banner.show{ display:flex; }
+@keyframes slideIn{ from{ opacity:0; transform:translateY(-8px);} to{ opacity:1; transform:translateY(0);} }
+.check{ width:20px; height:20px; border-radius:50%; background:var(--green); position:relative; flex:none; }
+.check::after{ content:''; position:absolute; left:6px; top:3px; width:5px; height:9px; border:solid #03110a; border-width:0 2px 2px 0; transform:rotate(45deg); }
+
+/* ---------- Appeal output ---------- */
+.output-card{ padding:20px 18px; margin-top:16px; display:none; }
+.output-card.show{ display:block; animation:fadeUp .4s ease; }
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
+.output-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.output-head span{ font-family:var(--mono); font-size:11px; color:var(--blue); letter-spacing:.1em; text-transform:uppercase; }
+.output-text{
+font-family:var(--mono); font-size:13px; line-height:1.7; color:var(--text);
+white-space:pre-wrap; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.06);
+border-radius:10px; padding:16px; max-height:340px; overflow-y:auto;
+}
+.copied-tag{ font-family:var(--mono); font-size:11px; color:var(--green); opacity:0; transition:opacity .2s ease; }
+.copied-tag.show{ opacity:1; }
+
+/* ---------- Footer ---------- */
+footer{ margin-top:56px; text-align:center; padding-top:30px; border-top:1px solid var(--panel-border); }
+.foot-title{ font-family:var(--mono); font-size:17px; letter-spacing:.05em;
+background:linear-gradient(90deg, var(--green), var(--blue)); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:16px; }
+.foot-block{ margin-bottom:16px; }
+.foot-label{ font-family:var(--mono); font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.14em; margin-bottom:8px; }
+.foot-links{ display:flex; flex-direction:column; gap:8px; align-items:center; }
+.foot-link{
+font-size:13.5px; color:var(--green); text-decoration:none; border:1px solid var(--panel-border);
+padding:8px 14px; border-radius:999px; display:inline-flex; gap:8px; align-items:center;
+transition:all .2s ease; max-width:100%;
+}
+.foot-link:hover{ border-color:var(--green); background:rgba(57,255,156,0.06); }
+.foot-link small{ color:var(--text-dim); font-family:var(--mono); }
+.foot-copy{ margin-top:20px; font-size:11.5px; color:var(--text-dim); font-family:var(--mono); }
+
+::-webkit-scrollbar{ width:8px; }
+::-webkit-scrollbar-thumb{ background:rgba(57,255,156,0.25); border-radius:8px; }
+
+@media (prefers-reduced-motion: reduce){
+*{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<div class="veil"></div>
+
+<div class="wrap">
+
+<div class="hero">
+<div class="badge"><span class="dot"></span>SYSTEM ONLINE</div>
+<h1 class="title">𝗥𝗔𝗭𝗔 ⊗ 𝙃𝘼𝘾𝙆𝗦</h1>
+<div class="subtitle">WP Ban · Unban · VIP Support</div>
+<p class="tagline">Draft a clear, professional WhatsApp account-review appeal in seconds. Review it, then send it yourself from your own email app — nothing is sent automatically.</p>
+<div class="terminal-line">&gt; awaiting_input<span class="caret"></span></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="section-label">01 · Select Your Issue</div>
+<div class="grid" id="dashboard">
+<div class="card issue-card active" data-issue="ban">
+<span class="issue-icon">⛔</span>
+<div class="issue-title">WhatsApp Ban Appeal</div>
+<div class="issue-desc">Your number got banned or suspended and you want it reviewed.</div>
+</div>
+<div class="card issue-card" data-issue="otp">
+<span class="issue-icon">🔑</span>
+<div class="issue-title">OTP Problem</div>
+<div class="issue-desc">Not receiving the verification code via SMS or call.</div>
+</div>
+<div class="card issue-card" data-issue="login">
+<span class="issue-icon">🛡️</span>
+<div class="issue-title">Login Verification Problem</div>
+<div class="issue-desc">Stuck on the verification step while logging in.</div>
+</div>
+<div class="card issue-card" data-issue="review">
+<span class="issue-icon">📋</span>
+<div class="issue-title">Account Review Request</div>
+<div class="issue-desc">General request asking WhatsApp to re-check your account.</div>
+</div>
+</div>
+
+<!-- FORM -->
+<div class="section-label">02 · Your Details</div>
+<div class="card form-card">
+<div class="field-row">
+<div class="field">
+<label>Full Name</label>
+<input type="text" id="f-name" placeholder="e.g. Ahmed Khan">
+</div>
+<div class="field">
+<label>WhatsApp Number</label>
+<input type="text" id="f-number" placeholder="+92 3xx xxxxxxx">
+</div>
+</div>
+<div class="field-row">
+<div class="field">
+<label>Email Address</label>
+<input type="email" id="f-email" placeholder="you@example.com">
+</div>
+<div class="field">
+<label>Country</label>
+<input type="text" id="f-country" placeholder="e.g. Pakistan">
+</div>
+</div>
+<div class="field-row">
+<div class="field">
+<label>Device Name</label>
+<input type="text" id="f-device" placeholder="e.g. Samsung Galaxy A54">
+</div>
+<div class="field">
+<label>Platform</label>
+<div class="toggle-group">
+<div class="toggle-btn active" data-platform="Android">Android</div>
+<div class="toggle-btn" data-platform="iPhone">iPhone</div>
+</div>
+</div>
+</div>
+<div class="field-row">
+<div class="field">
+<label>Problem Type</label>
+<select id="f-problem">
+<option value="ban">WhatsApp Ban Appeal</option>
+<option value="otp">OTP Problem</option>
+<option value="login">Login Verification Problem</option>
+<option value="review">Account Review Request</option>
+</select>
+</div>
+<div class="field">
+<label>Appeal Language</label>
+<div class="toggle-group">
+<div class="toggle-btn active" data-lang="en">English</div>
+<div class="toggle-btn" data-lang="ar">العربية</div>
+</div>
+</div>
+</div>
+<div class="field">
+<label>Detailed Description</label>
+<textarea id="f-desc" maxlength="600" placeholder="Explain what happened, when it started, and any error message you saw..."></textarea>
+<div class="counter" id="f-counter">0 / 600</div>
+</div>
+
+<button class="btn btn-primary" id="btn-generate">✦ Generate VIP Appeal</button>
+
+<div class="loading-wrap" id="loading">
+<div class="spinner"></div> compiling appeal…
+</div>
+</div>
+
+<!-- OUTPUT -->
+<div class="card output-card" id="output-card">
+<div class="success-banner" id="success-banner">
+<div class="check"></div> Appeal generated successfully — review it below before sending.
+</div>
+<div class="output-head">
+<span>Generated Appeal</span>
+<span class="copied-tag" id="copied-tag">✓ Copied</span>
+</div>
+<div class="output-text" id="appeal-text"></div>
+<div class="btn-row">
+<button class="btn btn-outline" id="btn-copy">📋 Copy</button>
+<button class="btn btn-outline" id="btn-download">⬇ Download .txt</button>
+<button class="btn btn-primary" id="btn-email">✉ Open Email App</button>
+</div>
+</div>
+
+<footer>
+<div class="foot-title">𝗥𝗔𝗭𝗔 ⊗ 𝙃𝘼𝘾𝙆𝗦</div>
+
+<div class="foot-block">
+<div class="foot-label">Official WhatsApp Channel</div>
+<div class="foot-links">
+<a class="foot-link" href="https://whatsapp.com/channel/0029Vb90o1JKAwEkwZKZ5W2X" target="_blank" rel="noopener">📢 RAZA Hacker — Official Channel</a>
+</div>
+</div>
+
+<div class="foot-block">
+<div class="foot-label">Official WhatsApp Groups</div>
+<div class="foot-links">
+<a class="foot-link" href="https://chat.whatsapp.com/GUKIz0V1jpHGVqKxXVkHGj?s=cl&p=a&mlu=4&ilr=4" target="_blank" rel="noopener">👥 Group 1</a>
+<a class="foot-link" href="https://chat.whatsapp.com/GUKIz0V1jpHGVqKxXVkHGj?s=cl&p=a&mlu=4&ilr=4" target="_blank" rel="noopener">👥 Code With Raza</a>
+<a class="foot-link" href="https://whatsapp.com/channel/0029Vb90o1JKAwEkwZKZ5W2X" target="_blank" rel="noopener">👥 RAZA HACKS</a>
+</div>
+</div>
+
+<div class="foot-copy">© 2026 Raza Hacker · This tool only drafts your appeal — you review and send it yourself.</div>
+</footer>
+
+</div>
+
+<script>
+// ---------------- Matrix rain background ----------------
+(function(){
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+let w, h, cols, drops;
+const chars = 'アイウエオカキクケコサシスセソ01ROMANHACKER'.split('');
+function resize(){
+w = canvas.width = window.innerWidth;
+h = canvas.height = window.innerHeight;
+cols = Math.floor(w / 16);
+drops = new Array(cols).fill(1);
+}
+resize();
+window.addEventListener('resize', resize);
+function draw(){
+ctx.fillStyle = 'rgba(5,7,10,0.08)';
+ctx.fillRect(0,0,w,h);
+ctx.font = '14px monospace';
+for(let i=0;i<drops.length;i++){
+const text = chars[Math.floor(Math.random()*chars.length)];
+const isBlue = Math.random() > 0.85;
+ctx.fillStyle = isBlue ? '#3ad9ff' : '#39ff9c';
+ctx.fillText(text, i*16, drops[i]*16);
+if(drops[i]*16 > h && Math.random() > 0.975) drops[i] = 0;
+drops[i]++;
+}
+}
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduceMotion) setInterval(draw, 60);
+})();
+
+// ---------------- Terminal typing line ----------------
+(function(){
+const el = document.querySelector('.terminal-line');
+const lines = [
+'> awaiting_input',
+'> scanning account_status...',
+'> ready_to_generate_appeal'
+];
+let li = 0;
+function cycle(){
+li = (li + 1) % lines.length;
+el.innerHTML = lines[li] + '<span class="caret"></span>';
+}
+setInterval(cycle, 2600);
+})();
+
+// ---------------- Issue selection ----------------
+const issueCards = document.querySelectorAll('.issue-card');
+const problemSelect = document.getElementById('f-problem');
+issueCards.forEach(card => {
+card.addEventListener('click', () => {
+issueCards.forEach(c => c.classList.remove('active'));
+card.classList.add('active');
+problemSelect.value = card.dataset.issue;
+document.querySelector('.form-card').scrollIntoView({behavior:'smooth', block:'center'});
+});
+});
+problemSelect.addEventListener('change', () => {
+issueCards.forEach(c => c.classList.toggle('active', c.dataset.issue === problemSelect.value));
+});
+
+// ---------------- Platform toggle ----------------
+let platform = 'Android';
+document.querySelectorAll('.toggle-btn[data-platform]').forEach(btn => {
+btn.addEventListener('click', () => {
+document.querySelectorAll('.toggle-btn[data-platform]').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+platform = btn.dataset.platform;
+});
+});
+
+// ---------------- Language toggle ----------------
+let appealLang = 'en';
+document.querySelectorAll('.toggle-btn[data-lang]').forEach(btn => {
+btn.addEventListener('click', () => {
+document.querySelectorAll('.toggle-btn[data-lang]').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+appealLang = btn.dataset.lang;
+document.getElementById('appeal-text').style.direction = appealLang === 'ar' ? 'rtl' : 'ltr';
+document.getElementById('appeal-text').style.textAlign = appealLang === 'ar' ? 'right' : 'left';
+});
+});
+
+// ---------------- Character counter ----------------
+const desc = document.getElementById('f-desc');
+const counter = document.getElementById('f-counter');
+desc.addEventListener('input', () => {
+const len = desc.value.length;
+counter.textContent = `${len} / 600`;
+counter.classList.toggle('warn', len > 540);
+});
+
+// ---------------- Appeal generation ----------------
+const issueMeta = {
+ban: { label: 'account ban', ask: 'kindly reinstate my account after review' },
+otp: { label: 'OTP delivery issue', ask: 'help resolve the verification code delivery problem' },
+login: { label: 'login verification issue', ask: 'assist me in completing verification so I can log in' },
+review: { label: 'account status', ask: 'review my account and confirm its status' }
+};
+
+const issueMetaAr = {
+ban: { label: 'حظر الحساب', ask: 'إعادة تفعيل حسابي بعد المراجعة' },
+otp: { label: 'مشكلة استلام رمز التحقق', ask: 'حل مشكلة استلام رمز التحقق' },
+login: { label: 'مشكلة التحقق عند تسجيل الدخول', ask: 'مساعدتي في إتمام عملية التحقق لتسجيل الدخول' },
+review: { label: 'حالة الحساب', ask: 'مراجعة حسابي وتأكيد حالته' }
+};
+
+function buildAppeal(data){
+if(data.lang === 'ar'){
+const meta = issueMetaAr[data.problem] || issueMetaAr.review;
+const descLine = data.desc
+? `تفاصيل إضافية: ${data.desc}`
+: `لم أقم بمخالفة شروط خدمة واتساب عن علم، وأكون ممتنًا لإعادة النظر في هذا الأمر.`;
+
+return `الموضوع: طلب مراجعة حساب واتساب
+
+السادة فريق دعم واتساب المحترمون،
+
+أتواصل معكم لطلب المساعدة بخصوص حسابي على واتساب. أواجه حاليًا مشكلة تتعلق بـ${meta.label} على الرقم المرتبط بهذا الحساب، وأرجو ${meta.ask}.
+
+بيانات الحساب:
+- الاسم الكامل: ${data.name || 'غير محدد'}
+- رقم واتساب: ${data.number || 'غير محدد'}
+- البريد الإلكتروني: ${data.email || 'غير محدد'}
+- الجهاز: ${data.device || 'غير محدد'} (${data.platform})
+- الدولة: ${data.country || 'غير محدد'}
+- نوع المشكلة: ${meta.label}
+
+${descLine}
+
+أشكركم على وقتكم وتفهمكم، وأتطلع إلى ردكم الكريم.
+
+مع خالص التقدير،
+${data.name || 'مستخدم واتساب'}`;
+}
+
+const meta = issueMeta[data.problem] || issueMeta.review;
+const greetingVariants = [
+'I am writing to respectfully request your assistance regarding my WhatsApp account.',
+'I hope this message finds you well. I am reaching out regarding an issue with my WhatsApp account.',
+'I would like to formally request support from your team concerning my WhatsApp account.'
+];
+const closingVariants = [
+'I appreciate your time and understanding, and I look forward to a positive resolution.',
+'Thank you for taking the time to review my request — I look forward to your response.',
+'I would be grateful for your assistance and thank you in advance for your support.'
+];
+const greet = greetingVariants[Math.floor(Math.random()*greetingVariants.length)];
+const close = closingVariants[Math.floor(Math.random()*closingVariants.length)];
+
+const descLine = data.desc
+? `Additional details: ${data.desc}`
+: `I have not knowingly violated WhatsApp's Terms of Service and would appreciate a closer look into this matter.`;
+
+return `Subject: WhatsApp Account Review Request
+
+Dear WhatsApp Support Team,
+
+${greet} I am currently experiencing a ${meta.label} on the number associated with this account, and I would like to ${meta.ask}.
+
+Account Details:
+- Full Name: ${data.name || 'N/A'}
+- WhatsApp Number: ${data.number || 'N/A'}
+- Email Address: ${data.email || 'N/A'}
+- Device: ${data.device || 'N/A'} (${data.platform})
+- Country: ${data.country || 'N/A'}
+- Issue Type: ${meta.label}
+
+${descLine}
+
+${close}
+
+Sincerely,
+${data.name || 'A WhatsApp User'}`;
+}
+
+const btnGenerate = document.getElementById('btn-generate');
+const loading = document.getElementById('loading');
+const outputCard = document.getElementById('output-card');
+const appealTextEl = document.getElementById('appeal-text');
+const successBanner = document.getElementById('success-banner');
+let currentAppeal = '';
+
+btnGenerate.addEventListener('click', () => {
+const data = {
+name: document.getElementById('f-name').value.trim(),
+number: document.getElementById('f-number').value.trim(),
+email: document.getElementById('f-email').value.trim(),
+country: document.getElementById('f-country').value.trim(),
+device: document.getElementById('f-device').value.trim(),
+platform: platform,
+problem: problemSelect.value,
+lang: appealLang,
+desc: desc.value.trim()
+};
+
+btnGenerate.disabled = true;
+loading.classList.add('show');
+outputCard.classList.remove('show');
+successBanner.classList.remove('show');
+
+setTimeout(() => {
+currentAppeal = buildAppeal(data);
+appealTextEl.textContent = currentAppeal;
+appealTextEl.style.direction = data.lang === 'ar' ? 'rtl' : 'ltr';
+appealTextEl.style.textAlign = data.lang === 'ar' ? 'right' : 'left';
+loading.classList.remove('show');
+outputCard.classList.add('show');
+successBanner.classList.add('show');
+btnGenerate.disabled = false;
+outputCard.scrollIntoView({behavior:'smooth', block:'start'});
+}, 1100);
+});
+
+// ---------------- Copy ----------------
+const copiedTag = document.getElementById('copied-tag');
+document.getElementById('btn-copy').addEventListener('click', async () => {
+if(!currentAppeal) return;
+try{
+await navigator.clipboard.writeText(currentAppeal);
+}catch(e){
+const ta = document.createElement('textarea');
+ta.value = currentAppeal;
+document.body.appendChild(ta);
+ta.select();
+document.execCommand('copy');
+document.body.removeChild(ta);
+}
+copiedTag.classList.add('show');
+setTimeout(() => copiedTag.classList.remove('show'), 1800);
+});
+
+// ---------------- Download ----------------
+document.getElementById('btn-download').addEventListener('click', () => {
+if(!currentAppeal) return;
+const blob = new Blob([currentAppeal], {type:'text/plain'});
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'whatsapp-appeal.txt';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+});
+
+// ---------------- Open email app (mailto, user must review & send) ----------------
+document.getElementById('btn-email').addEventListener('click', () => {
+if(!currentAppeal) return;
+const bodyOnly = currentAppeal.replace(/^(Subject:|الموضوع:).*\n\n/, '');
+const subjectText = appealLang === 'ar' ? 'طلب مراجعة حساب واتساب' : 'WhatsApp Account Review Request';
+const subject = encodeURIComponent(subjectText);
+const body = encodeURIComponent(bodyOnly);
+const mailto = `mail:support@whatsapp.com?subject=${subject}&body=${body}`;
+window.location.href = mailto;
+});
+</script>
+
+</body>
+</html>
